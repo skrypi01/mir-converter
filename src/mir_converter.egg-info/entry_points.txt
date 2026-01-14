@@ -1,2 +1,0 @@
-[console_scripts]
-mir-convert = mir_converter.xlsx_to_csv:main
