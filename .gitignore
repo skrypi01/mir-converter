@@ -1,0 +1,17 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Test artifacts
+.pytest_cache/
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+
+# Data (DO NOT COMMIT DATA)
+*.xlsx
+*.csv

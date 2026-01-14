@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mir-converter"
+version = "0.1.0"
+description = "Deterministic Excel → CSV converter for long-text medical data"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+
+authors = [
+    { name = "Your Name", email = "you@company.com" }
+]
+
+dependencies = [
+    "pandas>=2.0",
+    "openpyxl>=3.1"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+mir-convert = "mir_converter.xlsx_to_csv:main"
+
