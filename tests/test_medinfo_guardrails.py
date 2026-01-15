@@ -8,7 +8,7 @@ from mir_converter import convert_xlsx_to_csv
 )
 def test_medinfo_row_count():
     xlsx_path = os.environ["MEDINFO_XLSX"]
-    csv_path = "out.csv"
+    csv_path = "../mir_converter_guardrails_test_out.csv"
 
     result = convert_xlsx_to_csv(xlsx_path, csv_path)
 
