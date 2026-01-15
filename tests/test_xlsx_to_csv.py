@@ -1,6 +1,7 @@
 import csv
 from pathlib import Path
 import pandas as pd
+import pytest
 
 from mir_converter.xlsx_to_csv import convert_xlsx_to_csv
 
@@ -26,18 +27,16 @@ def create_sample_xlsx(path: Path):
     df.to_excel(path, index=False, engine="openpyxl")
 
 
-def test_convert_xlsx_to_csv(tmp_path: Path):
-    # Arrange
+
+def test_convert_xlsx_to_csv(tmp_path):
     xlsx_path = tmp_path / "input.xlsx"
     csv_path = tmp_path / "output.csv"
 
     create_sample_xlsx(xlsx_path)
 
-    # Act
-    result = convert_xlsx_to_csv(
-        xlsx_path=str(xlsx_path),
-        csv_path=str(csv_path)
-    )
+    with pytest.warns(UserWarning, match="Sanitized column names"):
+        result = convert_xlsx_to_csv(xlsx_path, csv_path)
+
 
     # Assert: metadata
     assert result["rows"] == 3
@@ -51,7 +50,7 @@ def test_convert_xlsx_to_csv(tmp_path: Path):
 
     # Header + 3 rows
     assert len(rows) == 4
-    assert rows[0] == ["Question", "Response", "Score"]
+    assert rows[0] == ["question", "response", "score"]
 
     # Check quoting and multiline preservation
     assert "Text with, comma" in rows[2][0]
