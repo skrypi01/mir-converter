@@ -1,4 +1,5 @@
 import csv
+from unittest import result
 import pandas as pd
 from pathlib import Path
 from typing import Dict, Any
@@ -6,10 +7,6 @@ import warnings
 from mir_converter.column_sanitizer import sanitize_columns
 import json
 from datetime import datetime
-
-#warnings.simplefilter(action="ignore", category=UserWarning)
-
-
 
 def convert_xlsx_to_csv(
     xlsx_path: str,
@@ -33,21 +30,18 @@ def convert_xlsx_to_csv(
     if sanitize_columns_flag:
         column_mapping, collisions = sanitize_columns(df.columns.tolist())
 
-        # Collision detection
         if collisions:
             raise ValueError(
                 f"Column name collision after sanitization: {collisions}"
             )
 
-        #  Warn if columns were changed
-        changed = {
-            k: v for k, v in column_mapping.items() if k != v
-        }
+        changed = {k: v for k, v in column_mapping.items() if k != v}
         if changed:
             warnings.warn(
                 f"Sanitized column names: {changed}",
                 UserWarning
             )
+
         df = df.rename(columns=column_mapping)
 
     df.to_csv(
@@ -57,6 +51,17 @@ def convert_xlsx_to_csv(
         quoting=csv.QUOTE_ALL,
         lineterminator="\n",
     )
+
+    # ✅ PERSIST COLUMN MAPPING HERE (correct place)
+    mapping_payload = {
+        "version": "v1",
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "column_mapping": column_mapping,
+    }
+
+    mapping_path = csv_path.with_suffix(".columns.json")
+    with open(mapping_path, "w", encoding="utf-8") as f:
+        json.dump(mapping_payload, f, indent=2)
 
     return {
         "rows": len(df),
@@ -91,17 +96,6 @@ def main():
     )
 
     print(result)
-    
-    mapping_payload = {
-        "version": "v1",
-        "generated_at": datetime.utcnow().isoformat() + "Z",
-        "column_mapping": column_mapping,
-    }
-
-    mapping_path = csv_path.with_suffix(".columns.json")
-
-    with open(mapping_path, "w", encoding="utf-8") as f:
-        json.dump(mapping_payload, f, indent=2)
 
 
 if __name__ == "__main__":
